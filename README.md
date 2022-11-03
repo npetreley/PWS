@@ -1,10 +1,6 @@
-# Cisco IM&P SOAP and REST examples
+# Cisco IM&P REST examples
 
-## A TALE OF TWO SERVICES
-
-These scripts employ two different Cisco IM&P services. One is `EPASSoap`,
-obviously a SOAP API.  The other is `Presence Web Services` `(PWS)`,
-for which you can use SOAP or REST. The examples here use REST for `PWS`.
+These files are samples for programming `Presence Web Services` `(PWS)` in Python.
 
 You can download the documentation from here:
 (https://developer.cisco.com/site/im-and-presence/documents/presence_web_service/latest_version/)
@@ -12,42 +8,16 @@ You can download the documentation from here:
 ## HOW TO USE THE SCRIPTS
 
 1. Edit the json and list files to define your server, users, contact, etc.
+
 (see `SET YOUR PARAMETERS` below)
 
 2. Make sure the computer you're using for the endpoint can accept and
-respond to TCP port 5000 (generally via firewall settings)
+respond to TCP port 8080 (generally via firewall settings)
 
-3. Run the endpoint listener web service script `endpoint.py`
-
-```
-  $ python endpoint.py
-```
-
-4. Run the script `pws-create.py`.  This tells Cisco IM&P about the endpoint,
-and subscribes to presence notifications for a contact.
-
-```
-  $ python pws-create.py
-```
-
-5. Change the presence of the contact you defined in `enduser.json`.
-You can do this with a Jabber/XMPP client or with the script `setpresence.py`
-
-```
-  $ python setpresence.py <presence, such as AVAILABLE>
-```
-
-## THE EPASSoap SCRIPTS
-
-## `addcontacts.py` and `delcontacts.py`
-
-These are self-explanatory optional scripts for adding and deleting contacts
-for the end user.  If you already have users and contacts set up to work with,
-you won't need these scripts.
-
-The API requests to add and delete contacts are only available as SOAP
-requests.  So `addcontacts.py` and `delcontacts.py` both use EPASSoap,
-not REST.
+3. Run `python3 pws-delete.py`
+4. Run `python3 pws-create.py`
+5. Run `python3 endpoint.py`
+6. Run `python3 get_subscribed_presence.py 1 RICH_PRESENCE`
 
 ## THE PWS SCRIPTS
 
@@ -151,14 +121,9 @@ then try to `pip install <that dependency>`.
 Script Dependencies:
     `lxml`
     `requests`
-    `zeep`
     `json`
-
-The `endpoint.py` script needs `flask`, so run:
-
-```
-    $ pip install flask
-```
+    `subprocess`
+    `flask`
 
 ### SET YOUR PARAMETERS
 
@@ -168,17 +133,15 @@ server and the administrator username and password credentials.
 The file also contains the host IP for the endpoint URL.  This is the
 URL for the web service that listens for presence notifications.
 
-The default port for the web service is 5000, so you'll need to make
-sure the PC or server running `endpoint.py` can accept TCP traffic
-over port 5000.  
+The default port for the web service is 5000, but Cisco IM&P won't use 5000, so you'll need to set flask to use `8080` and make sure the PC or server running `endpoint.py` can accept TCP traffic over port 8080.  
 
 ```
 {
   "params" : [
       {
         "SERVER" : "<your cimp server>",
-        "USERNAME" : "administrator",
-        "PASSWD" : "password"
+        "USERNAME" : "<administrator>",
+        "PASSWD" : "<password>"
         "HOST": "<host IP of the ENDPOINTURL>"
       }
   ]
@@ -199,55 +162,26 @@ of your application user.
 }
 ```
 
-3. **[REQUIRED]** Edit `enduser.json` to include the username of the user whose
-contacts you want to add, and the name of one of that user's contacts.
+3. **[REQUIRED]** Edit `enduser.json` to include the username of the user whose contacts you want to add.
 
-You want to specify only the user names, not the full JIDs.  In other words,
-you want `joe` not `joe@somedomain.com`.  
+You want to specify only the user names, not the full JIDs.  In other words, you want `joe` not `joe@somedomain.com`.  
 
-The `USERNAME` is the name of the end user whose contact's presence you want
-to monitor.
-
-The `CONTACT` is the name of the user whose presence you want to monitor.
-
-This data is used by the Presence Web Services (PWS) scripts
-`pws-create.py`, `pws-delete.py`, `setpresence.py` and `endpoint.py`.
+The `USERNAME` is the name of the end user whose contact's presence you want to monitor.
 
 ```
 {
   "params" : [
       {
         "USERNAME" : "<Jabber end user name>",
-        "CONTACT" : "<End user contact name you want to monitor for presence>"
       }
   ]
 }
 ```
 
-4. **[OPTIONAL]** Edit `contacts.list` to include contacts for your end user.
+4. **[REQUIRED]** Edit `contacts.list` to include contacts for your end user.
 
-If the contact you specified for your end user already exists in
-the end user's "buddy list" or "contacts" (or however your client
-refers to contacts), you won't need to use `addcontacts.py`.  
-
-In case you don't already have contacts for your test user, edit
-`contacts.list` to include the names of one or more contacts you want
-to add (or delete later) with `addcontacts.py` and `delcontacts.py`.
-
-Make sure one of these contacts is the `CONTACT` you specified in
-`enduser.json` (see above).
-
-For example, if you specified `carlotta` as your `CONTACT`, you'll want
-`carlotta` in the list:
+For example (don't use these contact names, these are samples):
 
 ```
-[ "carlotta", "reed", "joe" ]
+[ "joe", "rita", "carlotta" ]
 ```
-
-All contacts go into a group called `Contacts`.  This is hard coded
-in the scripts, so you'd have to change the scripts to change that
-group to another group name.  This shouldn't be necessary for the
-scripts to work.  
-
-If you're using the contacts only for testing purposes, you can remove
-them when you're done with the script `delcontacts.py`.

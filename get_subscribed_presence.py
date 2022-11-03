@@ -23,7 +23,6 @@ import sys
 import requests
 import json
 from lxml import etree
-from flask import Flask, request
 
 # We use "requests" to execute REST operations to get presenced status
 # We use "lxml" to manipulate XML into data that "requests" can use
@@ -141,4 +140,3 @@ print(response.content)
 with open('status.txt','a+') as fh:
 	fh.write(response.text)
 	fh.close()
-
