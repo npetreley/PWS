@@ -24,7 +24,7 @@ respond to TCP port 8080 (generally via firewall settings)
 The API to set up your own presence notification handler is `PWS` or
 `Presence Web Services`.  You can use SOAP or REST here, but REST is a
 simpler API to work with, so our examples use REST, `pws-create.py`,
-`pws-delete.py`, `endpoint.py` and (optional) `setpresence.py`.
+`pws-delete.py`, `endpoint.py` and `get_subscribed_presence.py`.
 
 The REST API procedure is generally as follows:
 
@@ -55,39 +55,25 @@ This script is simply an "undo" for `pws-create.py`.  It unsubscribes
 presence notifications for the contacts and unregisters the endpoint URL.
 
 Use this script to clear the subscriptions and endpoint when you want
-to change anything and try again.
+to change anything and try again. This script is purposely overkill, just in case someone accidentally created multiple endpoints and subscriptions.
 
 ## `endpoint.py`
 
-This is the web service that listens on port 5000 for REST-initiated
+This is the web service that listens on port 8080 for REST-initiated
 notifications that a contact's presence has changed.  It responds by
 using a REST request to fetch the BASIC presence for that contact,
 and appends the presence status response to the file `status.txt`.
-
-## `setpresence.py`
-
-This project works fine without this script if you want to change
-the presence of a contact using any XMPP/Jabber client.  
-If you don't want to use an XMPP/Jabber client, you can use this script
-to change the presence of the contact defined in `enduser.json`.
-
-Usage:
-
-`python setpresence.py <one of AVAILABLE, BUSY, DND, AWAY, UNAVAILABLE or VACATION>`
-
 
 ## HOW TO PREPARE TO USE THE SCRIPTS
 
 ### INSTALL PYTHON
 
-Install Python 3.7.  Follow the instructions for your OS from here:
-(https://docs.python.org/3.7/using/index.html)
+Install Python 3, latest version.  Follow the instructions for your OS from here:
+(https://docs.python.org/3/)
 
-On Windows, choose the option to add to PATH environment variable
+On Windows, choose the option to add to PATH environment variable.
 
-While we use the commands `pip` and `python` in this documentation,
-you may need to substitute them with `pip3` and possibly `python3` on
-Linux or Mac.
+While we use the commands `pip3` and `python3` which are appropriate for Linux, you may need to substitute them with `pip` and possibly `python` on Windows.
 
 ### CREATE A VIRTUAL ENVIRONMENT
 
@@ -103,7 +89,7 @@ project.
 
 Once you have your virtual environment installed, execute the correct
 `activate` procedure for your OS so that you're operating from within
-the virtual environment.
+the virtual environment. I created these sampled on Linux, so you would execute `source activate` in the venv/bin directory.
 
 ### INSTALL PYTHON DEPENDENCIES
 
@@ -111,12 +97,12 @@ The commands you'll need to install dependencies will vary from OS to OS.
 Start with
 
 ```
-    $ pip install zeep
+    $ pip3 install requests
 ```
 
 This should automatically install most libraries you'll need. If you get
 a message when you run a script that says your `import` doesn't work,
-then try to `pip install <that dependency>`.  
+then try to `pip3 install <that dependency>`.  
 
 Script Dependencies:
     `lxml`
